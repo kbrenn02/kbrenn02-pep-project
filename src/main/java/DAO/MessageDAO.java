@@ -4,6 +4,8 @@ import Model.Message;
 import Util.ConnectionUtil;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageDAO {
 
@@ -28,6 +30,58 @@ public class MessageDAO {
             if(returnMsgsRS.next()){
                 int generated_msg_id = (int) returnMsgsRS.getLong(1);
                 return new Message(generated_msg_id, msg.getPosted_by(), msg.getMessage_text(), msg.getTime_posted_epoch());
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    public List<Message> getAllMessages(){
+        Connection conn = ConnectionUtil.getConnection();
+        List<Message> msgs = new ArrayList<>();
+
+        try {
+            // Define SQL statement
+            String sql = "SELECT * FROM message";
+            
+            // Create prepared statement
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            // Loop through results. Create a message object and add to the msgs list
+            while(rs.next()){
+                Message msg = new Message(rs.getInt("message_id"), rs.getInt("posted_by"), 
+                        rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                msgs.add(msg);
+            }
+            // return the list of all messages
+            return msgs;
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    public Message getMessageByID(int id){
+        Connection conn = ConnectionUtil.getConnection();
+
+        try {
+            // Define SQL statement
+            String sql = "SELECT * FROM message WHERE message_id = ?";
+            
+            // Create prepared statement
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                Message msg = new Message(rs.getInt("message_id"), rs.getInt("posted_by"),
+                        rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                return msg;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

@@ -7,6 +7,9 @@ import Service.MessageService;
 
 import static org.mockito.ArgumentMatchers.nullable;
 
+import java.util.Collections;
+import java.util.List;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -35,8 +38,8 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
 
         // GET paths 
-        // app.get("/messages", this::exampleHandler);
-        // app.get("/messages/{message_id}", this::exampleHandler);
+        app.get("/messages", this::getAllMessages);
+        app.get("/messages/{message_id}", this::getSingleMessage);
         // app.get("/accounts/{account_id}/messages", this::exampleHandler);
 
         // POST paths
@@ -54,7 +57,49 @@ public class SocialMediaController {
     }
 
 
-    /* ----------------------- HANDLERS ----------------------- */
+    /* ----------------------- ALL HANDLERS ----------------------- */
+
+    /* ~~~~~~~~~~~~~~~ GET ~~~~~~~~~~~~~~~ */
+
+    // /messages
+    private void getAllMessages(Context ctx) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+
+        List<Message> recievedMsgs = messageService.getAllMessages();
+        
+        if(recievedMsgs == null){
+            recievedMsgs = Collections.emptyList();
+            ctx.json(recievedMsgs);
+        } else {
+            ctx.json(om.writeValueAsString(recievedMsgs));
+        }
+        ctx.status(200);
+    }
+
+    // /messages/{message_id}
+    private void getSingleMessage(Context ctx) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        // Message msg = om.readValue(ctx.body(), Message.class);
+        int msg_id = Integer.parseInt(ctx.pathParam("message_id"));
+
+        Message recievedMsg = messageService.getMessageByID(msg_id);
+        
+        if(recievedMsg == null){
+            ctx.result("");
+        } else {
+            ctx.json(om.writeValueAsString(recievedMsg));
+        }
+        ctx.status(200);
+    }
+
+    /*
+     * - The response body should contain a JSON representation of the message 
+     * identified by the message_id. It is expected for the response body to simply 
+     * be empty if there is no such message. The response status should always be 200, 
+     * which is the default.
+     */
+
+    /* ~~~~~~~~~~~~~~~ POST ~~~~~~~~~~~~~~~ */
 
     // /register
     private void registerANewUserHandler(Context ctx) throws JsonProcessingException {

@@ -5,6 +5,8 @@ import Model.Account;
 import DAO.AccountDAO;
 import DAO.MessageDAO;
 
+import java.util.List;
+
 public class MessageService {
     MessageDAO messageDAO;
     AccountDAO accountDAO;
@@ -31,8 +33,16 @@ public class MessageService {
         }
         
         return null;
-
     }
 
+    // Get list of all messages
+    public List<Message> getAllMessages(){
+        return messageDAO.getAllMessages();
+    }
+
+    // Get a single message by message ID
+    public Message getMessageByID(int id){
+        return messageDAO.getMessageByID(id);
+    }
 
 }
