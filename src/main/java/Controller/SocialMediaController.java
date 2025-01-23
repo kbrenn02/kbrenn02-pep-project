@@ -38,8 +38,8 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
 
         // GET paths 
-        app.get("/messages", this::getAllMessages);
-        app.get("/messages/{message_id}", this::getSingleMessage);
+        app.get("/messages", this::getAllMessagesHandler);
+        app.get("/messages/{message_id}", this::getSingleMessageHandler);
         // app.get("/accounts/{account_id}/messages", this::exampleHandler);
 
         // POST paths
@@ -51,7 +51,7 @@ public class SocialMediaController {
         // app.patch("/messages/{message_id}", this::exampleHandler);
 
         // DELETE paths
-        // app.delete("/messages/{message_id}", this::exampleHandler);
+        app.delete("/messages/{message_id}", this::deleteAMessageHandler);
 
         return app;
     }
@@ -59,10 +59,11 @@ public class SocialMediaController {
 
     /* ----------------------- ALL HANDLERS ----------------------- */
 
+
     /* ~~~~~~~~~~~~~~~ GET ~~~~~~~~~~~~~~~ */
 
     // /messages
-    private void getAllMessages(Context ctx) throws JsonProcessingException {
+    private void getAllMessagesHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper om = new ObjectMapper();
 
         List<Message> recievedMsgs = messageService.getAllMessages();
@@ -77,9 +78,8 @@ public class SocialMediaController {
     }
 
     // /messages/{message_id}
-    private void getSingleMessage(Context ctx) throws JsonProcessingException {
+    private void getSingleMessageHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper om = new ObjectMapper();
-        // Message msg = om.readValue(ctx.body(), Message.class);
         int msg_id = Integer.parseInt(ctx.pathParam("message_id"));
 
         Message recievedMsg = messageService.getMessageByID(msg_id);
@@ -92,12 +92,6 @@ public class SocialMediaController {
         ctx.status(200);
     }
 
-    /*
-     * - The response body should contain a JSON representation of the message 
-     * identified by the message_id. It is expected for the response body to simply 
-     * be empty if there is no such message. The response status should always be 200, 
-     * which is the default.
-     */
 
     /* ~~~~~~~~~~~~~~~ POST ~~~~~~~~~~~~~~~ */
 
@@ -143,5 +137,22 @@ public class SocialMediaController {
         }
     }
 
+
+    /* ~~~~~~~~~~~~~~~ DELETE ~~~~~~~~~~~~~~~ */
+
+    // /messages/{message_id}
+    private void deleteAMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        int msg_id = Integer.parseInt(ctx.pathParam("message_id"));
+
+        Message deletedMessage = messageService.deleteMessage(msg_id);
+
+        if(deletedMessage == null){
+            ctx.result("");
+        } else {
+            ctx.json(om.writeValueAsString(deletedMessage));
+        }
+        ctx.status(200);
+    }
 
 }
