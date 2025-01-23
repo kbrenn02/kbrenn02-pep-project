@@ -48,7 +48,7 @@ public class SocialMediaController {
         app.post("/messages", this::postAMessageHandler);
 
         // PATCH paths
-        // app.patch("/messages/{message_id}", this::exampleHandler);
+        app.patch("/messages/{message_id}", this::updateMessageHandler);
 
         // DELETE paths
         app.delete("/messages/{message_id}", this::deleteAMessageHandler);
@@ -134,6 +134,25 @@ public class SocialMediaController {
         } else {
             ctx.json(om.writeValueAsString(postedMessage));
             ctx.status(200);
+        }
+    }
+
+
+    /* ~~~~~~~~~~~~~~~ PATCH ~~~~~~~~~~~~~~~ */
+    
+    // //messages/{message_id}
+    private void updateMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        Message msg = om.readValue(ctx.body(), Message.class);
+        int msg_id = Integer.parseInt(ctx.pathParam("message_id"));
+
+        Message updatedMessage = messageService.updateMessage(msg_id, msg);
+
+        if(updatedMessage == null){
+            ctx.status(400);
+        } else {
+            ctx.status(200);
+            ctx.json(om.writeValueAsString(updatedMessage));
         }
     }
 
