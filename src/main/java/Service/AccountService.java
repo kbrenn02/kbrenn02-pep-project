@@ -33,7 +33,9 @@ public class AccountService {
     // Service that implements user loging functionality
     public Account loginUser(Account acct){
         Account retrievedAcct = accountDAO.loginUser(acct.getUsername());
-        if(acct.getPassword() == retrievedAcct.getPassword()){
+        if(retrievedAcct == null){
+            return null;
+        } else if(acct.getPassword().equals(retrievedAcct.getPassword())){
             return retrievedAcct;
         }
         return null;
