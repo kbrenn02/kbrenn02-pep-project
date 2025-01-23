@@ -128,9 +128,38 @@ public class MessageDAO {
             ps.setLong(3, msg.getTime_posted_epoch());
             ps.setInt(4, id);
 
-            ps.executeUpdate();
+            int rowsAffected = ps.executeUpdate();
 
-            return getMessageByID(id);
+            if(rowsAffected > 0){
+                return getMessageByID(id);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public List<Message> getMessageForUser(int id){
+        Connection conn = ConnectionUtil.getConnection();
+        List<Message> userMsgs = new ArrayList<>();
+
+        try {
+            // Define SQL statement
+            String sql = "SELECT * FROM message WHERE posted_by = ?";
+
+            // Create prepared statement
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+
+            while(rs.next()){
+                Message msg = new Message(rs.getInt("message_id"), rs.getInt("posted_by"),
+                        rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                userMsgs.add(msg);
+            }
+            return userMsgs;
+
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }

@@ -54,11 +54,21 @@ public class MessageService {
     public Message updateMessage(int id, Message msg){
         if(messageDAO.getMessageByID(id) == null){ // message does not exist
             return null;
-        } else if(msg.getMessage_text().length() < 0 || msg.getMessage_text().length() > 255){
-            return null;
-        } else {
-            return messageDAO.updateMessage(id, msg);
         }
+
+        if(msg == null || msg.getMessage_text() == null){
+            return null;
+        }
+        
+        if(msg.getMessage_text().isEmpty() || msg.getMessage_text().length() > 255){
+            return null;
+        } 
+        
+        return messageDAO.updateMessage(id, msg);
+    }
+
+    public List<Message> getMessageForUser(int id){
+        return messageDAO.getMessageForUser(id);
     }
 
 }

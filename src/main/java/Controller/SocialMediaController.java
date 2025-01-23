@@ -40,7 +40,7 @@ public class SocialMediaController {
         // GET paths 
         app.get("/messages", this::getAllMessagesHandler);
         app.get("/messages/{message_id}", this::getSingleMessageHandler);
-        // app.get("/accounts/{account_id}/messages", this::exampleHandler);
+        app.get("/accounts/{account_id}/messages", this::getMessageForUserHandler);
 
         // POST paths
         app.post("/register", this::registerANewUserHandler);
@@ -66,13 +66,13 @@ public class SocialMediaController {
     private void getAllMessagesHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper om = new ObjectMapper();
 
-        List<Message> recievedMsgs = messageService.getAllMessages();
+        List<Message> receivedMsgs = messageService.getAllMessages();
         
-        if(recievedMsgs == null){
-            recievedMsgs = Collections.emptyList();
-            ctx.json(recievedMsgs);
+        if(receivedMsgs == null){
+            receivedMsgs = Collections.emptyList();
+            ctx.json(receivedMsgs);
         } else {
-            ctx.json(om.writeValueAsString(recievedMsgs));
+            ctx.json(om.writeValueAsString(receivedMsgs));
         }
         ctx.status(200);
     }
@@ -88,6 +88,22 @@ public class SocialMediaController {
             ctx.result("");
         } else {
             ctx.json(om.writeValueAsString(recievedMsg));
+        }
+        ctx.status(200);
+    }
+
+    // /accounts/{account_id}/messages
+    private void getMessageForUserHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        int acct_id = Integer.parseInt(ctx.pathParam("account_id"));
+
+        List<Message> returnedMsgs = messageService.getMessageForUser(acct_id);
+        
+        if(returnedMsgs == null){
+            returnedMsgs = Collections.emptyList();
+            ctx.json(returnedMsgs);
+        } else {
+            ctx.json(om.writeValueAsString(returnedMsgs));
         }
         ctx.status(200);
     }
