@@ -27,7 +27,6 @@ public class AccountDAO {
             ResultSet returnAccts = ps.getGeneratedKeys();
             if(returnAccts.next()){
                 int generated_account_id = (int) returnAccts.getLong(1);
-                System.out.println(generated_account_id);
                 return new Account(generated_account_id, acct.getUsername(), acct.getPassword());
             }
         } catch (SQLException e) {
@@ -38,7 +37,7 @@ public class AccountDAO {
     }
 
     
-    // since usernames are unique values in the DB, I decided to just return an account with the given username instead
+    // Since usernames are unique values in the DB, I decided to just return an account with the given username instead
     // of working with an Account object
     public Account loginUser(String username){
         // Create connection
@@ -60,6 +59,29 @@ public class AccountDAO {
                 Account loggingInUser = new Account(rs.getInt("account_id"), rs.getString("username"), 
                         rs.getString("password"));
                 return loggingInUser;
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
+
+    public Account getUser(int id){
+        Connection conn = ConnectionUtil.getConnection();
+
+        try {
+            String sql = "SELECT * FROM account WHERE account_id = ?";
+
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setInt(1, id);
+
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()){
+                Account returnedUser = new Account(rs.getInt("account_id"), rs.getString("username"), 
+                        rs.getString("password"));
+                return returnedUser;
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());

@@ -5,6 +5,8 @@ import Model.Message;
 import Service.AccountService;
 import Service.MessageService;
 
+import static org.mockito.ArgumentMatchers.nullable;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -40,7 +42,7 @@ public class SocialMediaController {
         // POST paths
         app.post("/register", this::registerANewUserHandler);
         app.post("/login", this::logInAnExistingUserHandler);
-        // app.post("/messages", this::exampleHandler);
+        app.post("/messages", this::postAMessageHandler);
 
         // PATCH paths
         // app.patch("/messages/{message_id}", this::exampleHandler);
@@ -52,7 +54,7 @@ public class SocialMediaController {
     }
 
 
-    /* HANDLERS */
+    /* ----------------------- HANDLERS ----------------------- */
 
     // /register
     private void registerANewUserHandler(Context ctx) throws JsonProcessingException {
@@ -78,6 +80,20 @@ public class SocialMediaController {
             ctx.status(401);
         } else {
             ctx.json(om.writeValueAsString(loggedInUser));
+            ctx.status(200);
+        }
+    }
+
+    // /messages
+    private void postAMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        Message msg = om.readValue(ctx.body(), Message.class);
+
+        Message postedMessage = messageService.postMessage(msg);
+        if(postedMessage == null){
+            ctx.status(400);
+        } else {
+            ctx.json(om.writeValueAsString(postedMessage));
             ctx.status(200);
         }
     }

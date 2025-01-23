@@ -3,8 +3,6 @@ package Service;
 import Model.Account;
 import DAO.AccountDAO;
 
-import java.util.List;
-
 public class AccountService {
     AccountDAO accountDAO;
 
@@ -33,17 +31,12 @@ public class AccountService {
     // Service that implements user loging functionality
     public Account loginUser(Account acct){
         Account retrievedAcct = accountDAO.loginUser(acct.getUsername());
+        // Check if the retrieved account is null (username does not exist in the DB)
         if(retrievedAcct == null){
             return null;
-        } else if(acct.getPassword().equals(retrievedAcct.getPassword())){
+        } else if(acct.getPassword().equals(retrievedAcct.getPassword())){ // checks if the input password and the retrieved password are the same
             return retrievedAcct;
         }
         return null;
     }
-    
-
-
 }
-// if(loggingInUser.getPassword() == acct.getPassword()){
-//     return loggingInUser;
-// } else {}
