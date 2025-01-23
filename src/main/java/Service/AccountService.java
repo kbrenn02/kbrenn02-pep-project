@@ -30,13 +30,16 @@ public class AccountService {
         return null;
     }
 
-    // - The registration will be successful if and only 
-    // if the username is not blank, the password is at least 
-    // 4 characters long, and an Account with that username does not 
-    // already exist. If all these conditions are met, the response body 
-    // should contain a JSON of the Account, including its account_id. 
-    // The response status should be 200 OK, which is the default. 
-    // The new account should be persisted to the database.
+    // Service that implements user loging functionality
+    public Account loginUser(Account acct){
+        Account retrievedAcct = accountDAO.loginUser(acct.getUsername());
+        if(acct.getPassword() == retrievedAcct.getPassword()){
+            return retrievedAcct;
+        }
+        return null;
+    }
+    
+
 
 }
 // if(loggingInUser.getPassword() == acct.getPassword()){

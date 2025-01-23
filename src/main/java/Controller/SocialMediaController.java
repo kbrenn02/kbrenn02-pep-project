@@ -33,33 +33,29 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
 
         // GET paths 
-        app.get("/messages", this::exampleHandler);
-        app.get("/messages/{message_id}", this::exampleHandler);
-        app.get("/accounts/{account_id}/messages", this::exampleHandler);
+        // app.get("/messages", this::exampleHandler);
+        // app.get("/messages/{message_id}", this::exampleHandler);
+        // app.get("/accounts/{account_id}/messages", this::exampleHandler);
 
         // POST paths
-        app.post("/register", this::registerANewUser);
-        app.post("/login", this::exampleHandler);
-        app.post("/messages", this::exampleHandler);
+        app.post("/register", this::registerANewUserHandler);
+        app.post("/login", this::logInAnExistingUserHandler);
+        // app.post("/messages", this::exampleHandler);
 
         // PATCH paths
-        app.patch("/messages/{message_id}", this::exampleHandler);
+        // app.patch("/messages/{message_id}", this::exampleHandler);
 
         // DELETE paths
-        app.delete("/messages/{message_id}", this::exampleHandler);
+        // app.delete("/messages/{message_id}", this::exampleHandler);
 
         return app;
     }
 
-    /**
-     * This is an example handler for an example endpoint.
-     * @param context The Javalin Context object manages information about both the HTTP request and response.
-     */
-    private void exampleHandler(Context context) {
-        context.json("sample text");
-    }
 
-    private void registerANewUser(Context ctx) throws JsonProcessingException{
+    /* HANDLERS */
+
+    // /register
+    private void registerANewUserHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper om = new ObjectMapper();
         Account acct = om.readValue(ctx.body(), Account.class);
 
@@ -68,6 +64,21 @@ public class SocialMediaController {
             ctx.status(400);
         } else {
             ctx.json(om.writeValueAsString(registeredUser));
+            ctx.status(200);
+        }
+    }
+
+    // /login
+    private void logInAnExistingUserHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper om = new ObjectMapper();
+        Account acct = om.readValue(ctx.body(), Account.class);
+
+        Account loggedInUser = accountService.loginUser(acct);
+        if(loggedInUser == null){
+            ctx.status(401);
+        } else {
+            ctx.json(om.writeValueAsString(loggedInUser));
+            ctx.status(200);
         }
     }
 
