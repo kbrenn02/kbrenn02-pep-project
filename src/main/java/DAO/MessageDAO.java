@@ -119,14 +119,12 @@ public class MessageDAO {
 
         try {
             // Define SQL statement
-            String sql = "UPDATE message SET posted_by = ?, message_text = ?, time_posted_epoch = ? WHERE message_id = ?";
+            String sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
 
             // Create preparedStatement
             PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setInt(1, msg.getPosted_by());
-            ps.setString(2, msg.getMessage_text());
-            ps.setLong(3, msg.getTime_posted_epoch());
-            ps.setInt(4, id);
+            ps.setString(1, msg.getMessage_text());
+            ps.setInt(2, id);
 
             int rowsAffected = ps.executeUpdate();
 

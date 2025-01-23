@@ -67,6 +67,7 @@ public class MessageService {
         return messageDAO.updateMessage(id, msg);
     }
 
+    // Return all messages for a single user ID
     public List<Message> getMessageForUser(int id){
         return messageDAO.getMessageForUser(id);
     }
